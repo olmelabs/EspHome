@@ -1,0 +1,91 @@
+captive_portal:
+
+i2c:
+  sda: 21
+  scl: 22
+  scan: true
+  id: bus_a
+
+time:
+  - platform: homeassistant
+    id: esptime
+
+switch:
+  - platform: restart
+    name: "ESP32 Restart"
+    entity_category: "diagnostic"
+
+sensor:
+  
+  - platform: sgp30
+    eco2:
+      name: "SGP30 eCO2"
+      accuracy_decimals: 1
+      id: sgp30_co2
+    tvoc:
+      name: "SGP30 TVOC"
+      accuracy_decimals: 1
+      id: sgp30_tvoc
+    store_baseline: yes
+    address: 0x58
+    #update_interval: 10s    
+    # baseline:
+    #   eco2_baseline: 0x8A15
+    #   tvoc_baseline: 0x8ED3
+
+    #Device Memory
+  - platform: template
+    id: esp_memory
+    icon: mdi:memory
+    name: ESP Free Memory
+    lambda: return heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024;
+    unit_of_measurement: "kB"
+    state_class: measurement
+    entity_category: "diagnostic"
+
+text_sensor:
+    #https://www.co2meter.com/blogs/news/high-carbon-dioxide-co2-levels-indoors
+    #https://www.kane.co.uk/knowledge-centre/what-are-safe-levels-of-co-and-co2-in-rooms
+  - platform: template
+    name: "SGP30 eCO2 Concentration"
+    icon: "mdi:checkbox-marked-circle-outline"
+    lambda: |-
+      if (int(id(sgp30_co2).state) <= 400 ) {
+        return {"Excellent"};
+      }
+      else if (int(id(sgp30_co2).state) >= 401 && int(id(sgp30_co2).state) <= 1000 ) {
+        return {"Good"};
+      }
+      else if (int(id(sgp30_co2).state) >= 1001 && int(id(sgp30_co2).state) <= 2000 ) {
+        return {"High"};
+      }
+      else if (int(id(sgp30_co2).state) >= 2000) {
+        return {"Extremely high"};
+      }
+      else {
+        return {"error"};
+      }
+
+    #https://learn.kaiterra.com/en/resources/understanding-tvoc-volatile-organic-compounds
+  - platform: template
+    name: "SGP30 TVOC Concentration"
+    icon: "mdi:checkbox-marked-circle-outline"
+    lambda: |-
+      if (int(id(sgp30_tvoc).state) <= 220 ) {
+        return {"Excellent"};
+      }
+      else if (int(id(sgp30_tvoc).state) >= 221 && int(id(sgp30_tvoc).state) <= 660) {
+        return {"Good"};
+      }
+      else if (int(id(sgp30_tvoc).state) >= 661 && int(id(sgp30_tvoc).state) <= 1430) {
+        return {"High"};
+      }      
+      else if (int(id(sgp30_tvoc).state) >= 1431 && int(id(sgp30_tvoc).state) <= 2200) {
+        return {"Very high"};
+      }
+      else if (int(id(sgp30_tvoc).state) >= 2201) {
+        return {"Extremely high"};
+      }      
+      else {
+        return {"error"};
+      }        

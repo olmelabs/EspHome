@@ -1,0 +1,73 @@
+ 
+time:
+  - platform: sntp
+    id: time_sntp
+ 
+i2c:
+  sda: 21
+  scl: 22
+  scan: true
+  id: bus_a
+
+sensor:
+  - platform: aht10
+    variant: AHT20
+    temperature:
+      id: aht21_temperature
+      name: "AHT21 Temperature"
+    humidity:
+      id: aht21_humidity
+      name: "AHT21 Humidity"
+    update_interval: 30s
+    address: 0x38
+
+  - platform: bme680
+    temperature:
+      name: "BME680 Temperature"
+      oversampling: 16x
+    pressure:
+      name: "BME680 Pressure"
+    humidity:
+      id: "humidity"
+      name: "BME680 Humidity"
+    gas_resistance:
+      id: "gas_resistance"
+      name: "BME680 Gas Resistance"
+    address: 0x77
+    update_interval: 60s
+  - platform: template
+    name: "BME680 Indoor Air Quality"
+    id: iaq
+    icon: "mdi:gauge"
+    # caulculation: comp_gas = log(R_gas[ohm]) + 0.04 log(Ohm)/%rh * hum[%rh]
+    lambda: |-
+      return log(id(gas_resistance).state) + 0.04 *  id(humidity).state;
+text_sensor:
+  - platform: template
+    name: "BME680 IAQ Classification"
+    icon: "mdi:checkbox-marked-circle-outline"
+    lambda: |-
+      if (int(id(iaq).state) <= 50) {
+        return {"Excellent"};
+      }
+      else if (int(id(iaq).state) <= 100) {
+        return {"Good"};
+      }
+      else if (int(id(iaq).state) <= 150) {
+        return {"Lightly polluted"};
+      }
+      else if (int(id(iaq).state) <= 200) {
+        return {"Moderately polluted"};
+      }
+      else if (int(id(iaq).state) <= 250) {
+        return {"Heavily polluted"};
+      }
+      else if (int(id(iaq).state) <= 350) {
+        return {"Severely polluted"};
+      }
+      else if (int(id(iaq).state) <= 500) {
+        return {"Extremely polluted"};
+      }
+      else {
+        return {"unknown"};
+      }

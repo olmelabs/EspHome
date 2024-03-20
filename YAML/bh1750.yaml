@@ -1,0 +1,11 @@
+i2c:
+  sda: 21
+  scl: 22
+  scan: true
+  id: bus_a
+
+sensor:
+  - platform: bh1750
+    name: "BH1750 Illuminance"
+    address: 0x23
+    update_interval: 60s

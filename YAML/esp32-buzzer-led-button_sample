@@ -1,0 +1,71 @@
+
+time:
+  - platform: sntp
+    id: time_sntp
+
+uart:
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+  baud_rate: 256000
+  parity: NONE
+  stop_bits: 1
+
+rtttl:
+  output: rtttl_out
+
+output:
+  - platform: ledc
+    pin: GPIO19
+    id: rtttl_out
+
+  - platform: gpio
+    pin: GPIO18    
+    id: led_output
+
+button:
+  - platform: template
+    name: "Play Buzzer"
+    on_press:
+      then:
+        - rtttl.play: 'mission_imp:d=16,o=6,b=95:32d,32d#,32d,32d#,32d,32d#,32d,32d#,32d,32d,32d#,32e,32f,32f#,32g,g,8p,g,8p,a#,p,c7,p,g,8p,g,8p,f,p,f#,p,g,8p,g,8p,a#,p,c7,p,g,8p,g,8p,f,p,f#,p,a#,g,2d,32p,a#,g,2c#,32p,a#,g,2c,a#5,8c,2p,32p,a#5,g5,2f#,32p,a#5,g5,2f,32p,a#5,g5,2e,d#,8d'
+
+  - platform: template
+    name: "Stop Buzzer"  
+    on_press:
+      then:
+        - rtttl.stop 
+
+light:
+  - platform: binary
+    name: "Led"
+    output: led_output
+
+text_sensor:
+  - platform: template
+    name: Scene Button
+    id: scene_button
+    lambda: |-
+      return {"Off"};
+
+binary_sensor:
+  - platform: gpio
+    pin:
+     number: 16
+     mode: INPUT_PULLUP
+     inverted: true
+    name: "Test Button"
+    internal: true
+
+    on_click:
+      min_length: 50ms
+      max_length: 350ms
+      then: 
+        lambda: !lambda |-
+          if (id(scene_button).state == "Off") {
+            id(scene_button).publish_state("On");
+            id(led_output).turn_on();
+          } else {
+            id(scene_button).publish_state("Off");
+            id(led_output).turn_off();
+          }
+          

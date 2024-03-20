@@ -1,0 +1,24 @@
+i2c:
+  sda: 21
+  scl: 22
+  scan: true
+  id: bus_a
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_font
+    size: 14
+
+time:
+  - platform: homeassistant
+    id: esptime
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    id: my_display
+    address: 0x3C
+    lambda: |-
+      it.print(0, 0, id(roboto_font), "Current time");
+      it.strftime(0, 30, id(roboto_font), TextAlign::BASELINE_LEFT, "%Y-%m-%d %H:%M:%S", id(esptime).now());
+      it.rectangle(0, 20, it.get_width(), it.get_height()-20);

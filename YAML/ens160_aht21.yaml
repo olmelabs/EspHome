@@ -1,0 +1,30 @@
+i2c:
+  sda: 21
+  scl: 22
+  scan: true
+  id: bus_a
+
+sensor:
+  - platform: ens160
+    eco2:
+      name: "ENS160 eCO2"
+    tvoc:
+      name: "ENS160 tVOC"
+    aqi:
+      name: "ENS160 Air Quality Index"     
+    update_interval: 60s
+    address: 0x53
+    compensation:
+      temperature: aht21_temperature
+      humidity: aht21_humidity
+
+  - platform: aht10
+    variant: AHT20
+    temperature:
+      id: aht21_temperature
+      name: "AHT21 Temperature"
+    humidity:
+      id: aht21_humidity
+      name: "AHT21 Humidity"
+    update_interval: 30s
+    address: 0x38
