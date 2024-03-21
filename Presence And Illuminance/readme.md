@@ -11,5 +11,5 @@ ESP32-C3
 
   
 ### Notes
-Current firmware of LD2410 is not good enough to catch presense of still objects, this issue is demoed [here](https://www.youtube.com/watch?v=dAzHXpP3FcI&t=611s)
-BH1750FVI works perfectly.
+Current firmware of LD2410 is not good enough to catch presence of still objects, this issue is described [here](https://www.youtube.com/watch?v=dAzHXpP3FcI&t=611s)
+BH1750FVI works perfectly fine.
