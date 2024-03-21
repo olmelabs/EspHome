@@ -13,4 +13,4 @@ Esp32 Wroom Development Board
 
 
 ### How it looks
-![View in HA ](/img/home_assistant.png)
+![View in HA ](img/home_assistant.png)
