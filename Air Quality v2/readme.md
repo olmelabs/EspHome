@@ -13,5 +13,6 @@ Esp32 Wroom Development Board
 
 
 ### How it looks
-![View in HA ](img/home_assistant.png)
-![Setup] (img/breadboard.jpg.png)
+[<img src="img/breadboard.jpg" width="250"/>](img/breadboard.jpg)
+
+![View in HA](img/home_assistant.png)
