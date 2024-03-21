@@ -1,0 +1,174 @@
+captive_portal:
+#https://esphome.io/components/sensor/bme680_bsec.html
+time:
+  - platform: sntp
+    id: time_sntp
+ 
+i2c:
+  sda: 21
+  scl: 22
+  scan: true
+  id: bus_a
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_font
+    size: 14
+
+bme680_bsec:
+    # id
+    # -----------
+    # Identifier for this component, useful when working with multiple devices.
+    # Must be unique, and can be used in the sensor sections to refer to the correct device.
+    # Default: auto-computed
+    id: bme680
+
+    # i2c address
+    # -----------
+    # Common values are:
+    # - 0x76
+    # - 0x77
+    # Default: 0x76
+    address: 0x77
+
+    # Temperature offset
+    # ------------------
+    # Useful if device is in enclosure and reads too high
+    # For example, if it reads 5C too high, set this to 5
+    # This also corrects the relative humidity readings
+    # Default: 0
+    temperature_offset: 1.5
+
+    # IAQ calculation mode
+    # --------------------
+    # Available options:
+    # - static (for fixed position devices)
+    # - mobile (for on a person or other moveable devices)
+    # Default: static
+    iaq_mode: static
+
+    # Sample rate
+    # -----------
+    # Available options:
+    # - lp (low power - samples every 3 seconds)
+    # - ulp (ultra-low power - samples every 5 minutes)
+    # Default: lp
+    sample_rate: lp
+
+    # Interval at which to save BSEC state
+    # ------------------------------------
+    # Default: 6h
+    state_save_interval: 6h
+
+sensor:
+  - platform: sgp4x
+    voc:
+      name: "SGP41 VOC Index"
+      id: sgp41_voc
+    nox:
+      name: "SGP41 NOx Index"
+      id: sgp41_nox
+    compensation:
+      humidity_source: bme680_temperature
+      temperature_source: bme680_humidity
+
+  - platform: bme680_bsec
+    temperature:
+      # Temperature in °C
+      name: "BME680 Temperature"
+      id: bme680_temperature
+    pressure:
+      # Pressure in hPa
+      name: "BME680 Pressure"
+      id: bme680_pressure
+    humidity:
+      # Relative humidity %
+      name: "BME680 Humidity"
+      id: bme680_humidity
+    gas_resistance:
+      # Gas resistance in Ω
+      name: "BME680 Gas Resistance"
+      id: bme680_gas_resistance
+    iaq:
+      # Indoor air quality value
+      name: "BME680 IAQ"
+      id: bme680_iaq
+    iaq_accuracy:
+      # IAQ accuracy as a numeric value of 0, 1, 2, 3
+      name: "BME680 Numeric IAQ Accuracy"
+    co2_equivalent:
+      # CO2 equivalent estimate in ppm
+      name: "BME680 CO2 Equivalent"
+    breath_voc_equivalent:
+      # Volatile organic compounds equivalent estimate in ppm
+      name: "BME680 Breath VOC Equivalent"
+
+text_sensor:
+  - platform: bme680_bsec
+    iaq_accuracy:
+      # IAQ accuracy as a text value of Stabilizing, Uncertain, Calibrating, Calibrated
+      name: "BME680 IAQ Accuracy"
+
+  - platform: template
+    name: "BME680 IAQ Classification"
+    icon: "mdi:checkbox-marked-circle-outline"
+    lambda: |-
+      if (int(id(bme680_iaq).state) <= 50) {
+        return {"Excellent"};
+      }
+      else if (int(id(bme680_iaq).state) >= 51 && int(id(bme680_iaq).state) <= 100) {
+        return {"Good"};
+      }
+      else if (int(id(bme680_iaq).state) >= 101 && int(id(bme680_iaq).state) <= 150) {
+        return {"Lightly polluted"};
+      }
+      else if (int(id(bme680_iaq).state) >= 151 && int(id(bme680_iaq).state) <= 200) {
+        return {"Moderately polluted"};
+      }
+      else if (int(id(bme680_iaq).state) >= 201 && int(id(bme680_iaq).state) <= 250) {
+        return {"Heavily polluted"};
+      }
+      else if (int(id(bme680_iaq).state) >= 251 && int(id(bme680_iaq).state) <= 350) {
+        return {"Severely polluted"};
+      }
+      else if (int(id(bme680_iaq).state) >= 351) {
+        return {"Extremely polluted"};
+      }
+      else {
+        return {"error"};
+      }  
+    
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    id: ssd1306_display
+    address: 0x3C
+    lambda: |-
+      it.printf(0, 0, id(roboto_font), ":%.1f°C  %.1f%%", id(bme680_temperature).state, id(bme680_humidity).state);
+      it.printf(0, 15, id(roboto_font), "%.1f hPa", id(bme680_pressure).state);
+      it.printf(0, 30, id(roboto_font), "Voc: %.0f", id(sgp41_voc).state);
+      if (int(id(bme680_iaq).state) <= 50) {
+        it.print(0, 45, id(roboto_font), "Air: Excellent");
+      }
+      else if (int(id(bme680_iaq).state) >= 51 && int(id(bme680_iaq).state) <= 100) {
+         it.print(0, 45, id(roboto_font), "Air: Good");
+      }
+      else if (int(id(bme680_iaq).state) >= 101 && int(id(bme680_iaq).state) <= 150) {
+        it.print(0, 45, id(roboto_font), "Air: Lightly polluted");
+      }
+      else if (int(id(bme680_iaq).state) >= 151 && int(id(bme680_iaq).state) <= 200) {
+        it.print(0, 45, id(roboto_font), "Air: Moderately polluted");
+      }
+      else if (int(id(bme680_iaq).state) >= 201 && int(id(bme680_iaq).state) <= 250) {
+        it.print(0, 45, id(roboto_font), "Air: Heavily polluted");
+      }
+      else if (int(id(bme680_iaq).state) >= 251 && int(id(bme680_iaq).state) <= 350) {
+        it.print(0, 45, id(roboto_font), "Air: Severely polluted");
+      }
+      else if (int(id(bme680_iaq).state) >= 351) {
+        it.print(0, 45, id(roboto_font), "Air: Extremely polluted");
+      }
+      else {
+        it.print(0, 45, id(roboto_font), "Air: Unknown");
+      }  
+    
