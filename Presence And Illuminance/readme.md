@@ -15,7 +15,7 @@ Current firmware of LD2410 is not good enough to catch presence of still objects
 BH1750FVI works perfectly fine.
 
 ### How it looks
-[<img src="img/breadboard.jpg" width="250"/>](img/device1.jpg)
-[<img src="img/breadboard.jpg" width="250"/>](img/device2.jpg)
+[<img src="img/device1.jpg" width="250"/>](img/device1.jpg)
+[<img src="img/device2.jpg" width="250"/>](img/device2.jpg)
 
 ![View in HA](img/home_assistant.png)
