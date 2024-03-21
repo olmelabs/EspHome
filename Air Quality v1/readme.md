@@ -18,5 +18,6 @@ Probably this is related to issue described [here](https://github.com/nkitanov/i
 As a workaround bound it to separate ESP32 and switched to SGP41.
 
 ### How it looks
-![View in HA ](img/home_assistant.png)
-![Setup] (img/breadboard.jpg.png)
+[<img src="img/breadboard.jpg" width="250"/>](img/breadboard.jpg)
+
+![View in HA](img/home_assistant.png)
