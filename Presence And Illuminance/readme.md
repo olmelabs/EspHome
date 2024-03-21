@@ -1,7 +1,7 @@
 Home Assistant + Esp Home project to assess various air quality sensors
 
 ### Board
-ESP32-C3
+ESP32-C3 160MHz, 320KB RAM, 4MB Flash
 
 ### Components
 |Type|Name| Wiring| Voltage | Link
@@ -13,3 +13,9 @@ ESP32-C3
 ### Notes
 Current firmware of LD2410 is not good enough to catch presence of still objects, this issue is described [here](https://www.youtube.com/watch?v=dAzHXpP3FcI&t=611s)
 BH1750FVI works perfectly fine.
+
+### How it looks
+[<img src="img/breadboard.jpg" width="250"/>](img/device1.jpg)
+[<img src="img/breadboard.jpg" width="250"/>](img/device2.jpg)
+
+![View in HA](img/home_assistant.png)
