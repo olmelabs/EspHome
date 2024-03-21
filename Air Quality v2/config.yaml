@@ -144,7 +144,7 @@ display:
     id: ssd1306_display
     address: 0x3C
     lambda: |-
-      it.printf(0, 0, id(roboto_font), ":%.1f°C  %.1f%%", id(bme680_temperature).state, id(bme680_humidity).state);
+      it.printf(0, 0, id(roboto_font), "%.1f°C  %.1f%%", id(bme680_temperature).state, id(bme680_humidity).state);
       it.printf(0, 15, id(roboto_font), "%.1f hPa", id(bme680_pressure).state);
       it.printf(0, 30, id(roboto_font), "Voc: %.0f", id(sgp41_voc).state);
       if (int(id(bme680_iaq).state) <= 50) {

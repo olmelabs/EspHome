@@ -1,18 +1,22 @@
-Controller: Esp32 Wroom (prototype)
+Home Assistant + Esp Home project to assess various air quality sensors
 
-Sensors: 
-	SGP30
-		https://esphome.io/components/sensor/sgp30.html?highlight=sgp30
-		I2C 
-		3.3V
+### Board
+Esp32 Wroom Development Board
 
-Notes:
-	My particular sensor from AliExpress doesn't wotk with 5V.
+### Components
+|Type|Name| Wiring| Voltage | Link
+|--|--|--|--|--
+|Sensor |SGP30| I²C | 3.3V |[more](https://esphome.io/components/sensor/sgp30.html)
 
-How human readable values are calculated:
-	CO2
-		#https://www.co2meter.com/blogs/news/high-carbon-dioxide-co2-levels-indoors
-		#https://www.kane.co.uk/knowledge-centre/what-are-safe-levels-of-co-and-co2-in-rooms
-	
-	TVOC
-	    #https://learn.kaiterra.com/en/resources/understanding-tvoc-volatile-organic-compounds
+### How human readable values are calculated
+CO2: [link1](https://www.co2meter.com/blogs/news/high-carbon-dioxide-co2-levels-indoors), [link2](https://www.kane.co.uk/knowledge-centre/what-are-safe-levels-of-co-and-co2-in-rooms),  [TVOC](https://learn.kaiterra.com/en/resources/understanding-tvoc-volatile-organic-compounds)
+  
+### Notes
+My particular sensor from AliExpress doesn't wotk with 5V, had to put it on 3.3V.
+Also if i am adding another device to I2C bus it is failing to initialize.
+Probably this is related to issue described [here](https://github.com/nkitanov/iaq_board/issues/10)
+As a workaround bound it to separate ESP32 and switched to SGP41.
+
+### How it looks
+![View in HA ](img/home_assistant.png)
+![Setup] (img/breadboard.jpg.png)
