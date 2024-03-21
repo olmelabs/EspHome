@@ -6,6 +6,7 @@ It reports
  - tVOC arrow. 
 Actual value of tVOC index is not shown on display and not reported via Zigbee by default.
 ![Default device properties](img/home_assistant1.png)
+
 However it is possible to read and display actual reading of this sensor with the help of zha_toolkit and small automation. You need to have [zha_toolkit installed](https://github.com/mdeweerd/zha-toolkit) on your Home Assistant first. Then you can create following automation:
 ```
 alias: "Climate: Fetch tVOC data IKEA AQI"
@@ -32,6 +33,7 @@ action:
 mode: single
 ```
 The automation will create new entity `ikea_of_sweden_vindstyrka_voc_index` in Home Assistant, which you can add to the dashboard later.  At the end dasboard may look like this.
+
 ![Default device properties](img/home_assistant2.png)
 
 ### Note
