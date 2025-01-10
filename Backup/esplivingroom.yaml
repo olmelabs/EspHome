@@ -1,0 +1,89 @@
+esphome:
+  name: esplivingroom
+  friendly_name: EspLivingRoom
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ""
+
+ota:
+  - platform: esphome
+    password: ""
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esplivingroom Fallback Hotspot"
+    password: ""
+
+captive_portal:
+
+time:
+  - platform: sntp
+    id: time_sntp
+
+# bluetooth_proxy:
+#   active: true
+
+i2c:
+  sda: GPIO8
+  scl: GPIO9
+  scan: true
+  id: i2c_bus
+  frequency: 400kHz
+
+sensor:
+  - platform: bh1750
+    name: "BH1750 Illuminance"
+    address: 0x23
+    update_interval: 60s  
+
+    #Device UPTIME
+  - platform: uptime
+    name: Uptime
+    id: sys_uptime
+    update_interval: 60s
+
+    #Device Memory
+  - platform: template
+    id: esp_memory
+    icon: mdi:memory
+    name: ESP Free Memory
+    lambda: return heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024;
+    unit_of_measurement: "kB"
+    state_class: measurement
+    entity_category: "diagnostic"
+
+    #Device Temperature
+  - platform: template
+    id: sys_esp_temperature
+    name: ESP Temperature
+    lambda: return temperatureRead();
+    unit_of_measurement: °C
+    device_class: TEMPERATURE
+    entity_category: "diagnostic"
+    update_interval: 60s
+
+    #Device RSSI
+  - platform: wifi_signal
+    name: RSSI
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"      
+    
+button:
+  - platform: restart
+    icon: mdi:power-cycle
+    name: "ESP Reboot"    

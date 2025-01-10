@@ -1,0 +1,181 @@
+esphome:
+  name: esp32dev1
+  friendly_name: Esp32Dev1
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ""
+
+ota:
+  - platform: esphome
+    password: ""
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32Dev1 Fallback Hotspot"
+    password: ""
+
+captive_portal:
+
+spi:
+ clk_pin: 18
+ mosi_pin: 23
+ miso_pin: 19
+ 
+time:
+  - platform: homeassistant
+    id: esptime
+
+display:
+  - platform: ili9xxx
+    model: ili9341
+    cs_pin: 13
+    dc_pin: 27
+    reset_pin: 33
+    rotation: 0
+    invert_colors: false
+    dimensions: 320x240 
+    pixel_mode: 16bit 
+    color_order: rgb
+    #show_test_card: true   
+    id: tft_ha
+    pages: 
+      - id: page1
+        lambda: |-
+          it.fill(Color(0, 50, 150));
+          it.filled_rectangle(0, 0, 100, 100, my_green);
+          it.strftime(40, 120, id(roboto_40), id(my_white), "%H:%M:%S", id(esptime).now());
+          it.strftime(20, 160, id(roboto_40), id(my_white), "%d-%m-%Y", id(esptime).now());    
+
+touchscreen:
+  platform: xpt2046
+  id: my_touchscreen
+  cs_pin: 21
+  interrupt_pin: 16
+  update_interval: 50ms
+  threshold: 400
+  transform:
+    mirror_x: true
+    mirror_y: true     
+    swap_xy: true
+  calibration:
+    x_min: 280
+    x_max: 3860
+    y_min: 340
+    y_max: 3860   
+  on_touch:
+    - lambda: |-
+        if(touch.x >= 0 && touch.x <= 100 && touch.y >= 0 && touch.y <= 100)
+        {
+            id(switch_test_green).toggle();
+        }    
+        ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
+            touch.x,
+            touch.y,
+            touch.x_raw,
+            touch.y_raw
+            );        
+
+sensor:
+   #Device UPTIME
+  - platform: uptime
+    name: Uptime
+    id: sys_uptime
+    update_interval: 60s
+
+    #Device Memory
+  - platform: template
+    id: esp_memory
+    icon: mdi:memory
+    name: ESP Free Memory
+    lambda: return heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024;
+    unit_of_measurement: "kB"
+    state_class: measurement
+    entity_category: "diagnostic"
+
+    #Device Temperature
+  - platform: template
+    id: sys_esp_temperature
+    name: ESP Temperature
+    lambda: return temperatureRead();
+    unit_of_measurement: °C
+    device_class: TEMPERATURE
+    entity_category: "diagnostic"
+    update_interval: 60s
+
+    #Device RSSI
+  - platform: wifi_signal
+    name: RSSI
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"     
+
+button:
+  - platform: restart
+    icon: mdi:power-cycle
+    name: "ESP Reboot" 
+
+binary_sensor:
+  - platform: touchscreen
+    id: button_test_green
+    name: Test Button Green
+    x_min: 0
+    x_max: 100
+    y_min: 0
+    y_max: 100
+    #page_id: home_page_id    
+
+switch:
+  - platform: restart
+    name: "ESP32 Restart"
+    entity_category: "diagnostic"
+
+  - platform: template
+    id: switch_test_green
+    name: "Test Switch Green"
+    optimistic: true
+
+color:
+  - id: my_red
+    red: 100%
+    green: 3%
+    blue: 5%
+
+  - id: my_green
+    red: 0%
+    green: 100%
+    blue: 5%
+
+  - id: my_light_green
+    hex: 90EE90
+
+  - id: my_blue
+    red: 0%
+    green: 3%
+    blue: 100%
+
+  - id: my_white
+    red: 100%
+    green: 100%
+    blue: 100%
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_60
+    size: 60
+  - file: "gfonts://Roboto"
+    id: roboto_40
+    size: 40       
